@@ -232,6 +232,7 @@ def main():
 		vq_model = load_model_from_config(vqgan_config, opt.vqgan_ckpt)
 		vq_model = vq_model.to(device)
 		vq_model.decoder.fusion_w = opt.dec_w
+	# breakpoint()
 
 	# set inputdir and outputdir
 	os.makedirs(opt.outdir, exist_ok=True)

@@ -7,10 +7,10 @@ import pandas as pd
 from tqdm import tqdm
 import random
 
-target_hr_path = ''
+target_hr_path = '/home/gdj592/code/3dv/CoSeR/output'
 os.makedirs(target_hr_path, exist_ok=True)
 
-imagenet_path = ''
+imagenet_path = '/home/gdj592/code/3dv/CoSeR/data/ImageNet'
 resolution = 512
 
 class_path = os.listdir(imagenet_path)
