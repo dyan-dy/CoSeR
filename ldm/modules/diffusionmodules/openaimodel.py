@@ -9,6 +9,9 @@ import torch as th
 import torch.nn as nn
 import torch.nn.functional as F
 
+import time
+import datetime
+
 try:
     import xformers
     import xformers.ops
@@ -904,6 +907,7 @@ class UNetModel(nn.Module):
             nn.SiLU(),
             zero_module(conv_nd(dims, model_channels, out_channels, 3, padding=1)),
         )
+
         if self.predict_codebook_ids:
             self.id_predictor = nn.Sequential(
             normalization(ch),
@@ -1218,7 +1222,7 @@ class UNetModelAiA(nn.Module):
         self._feature_size += ch
 
         self.output_blocks = nn.ModuleList([])
-        for level, mult in list(enumerate(channel_mult))[::-1]:
+        for level, mult in list(enumerate(channel_mult))[::-1]: # 1,2,4,4
             for i in range(self.num_res_blocks[level] + 1):
                 ich = input_block_chans.pop()
                 layers = [
@@ -1276,6 +1280,7 @@ class UNetModelAiA(nn.Module):
                                     use_checkpoint=use_checkpoint, use_lr=True, merge_x2=merge_x2, dubch=True
                                 )
                             )
+                # breakpoint()
                 if level and i == self.num_res_blocks[level]:
                     out_ch = ch
                     layers.append(
@@ -1363,13 +1368,31 @@ class UNetModelAiA(nn.Module):
                 h = module(h, emb, condition['prompt_emb'], lr_condition_dec.pop(), condition['lr_prompt_emb'], reference=ref_condition_dec.pop())
         else:
             h = x.type(self.dtype)
+            save_path = "./output_gen/"
+            count = 0
+            torch.save(h, f"{save_path}input_{count}.pt")
             for module in self.input_blocks:
                 h = module(h, emb, condition['prompt_emb'], lr_prompt=condition['lr_prompt_emb'])
+                count += 1
+                torch.save(h, f"{save_path}input_{count}.pt")
                 hs.append(h)
+            
+        
+            count = 0
             h = self.middle_block(h, emb, condition['prompt_emb'], None, condition['lr_prompt_emb'], reference=None, gen_mode=gen_mode)
+            torch.save(h, f"{save_path}middle_{count}.pt")
+            # hs.append(h)
+            torch.save(hs, f'{save_path}h_list.pt')
+
+            count = 0
+            breakpoint()
             for module in self.output_blocks:
+                print(module)
+                print(h.shape, hs[-1].shape)
+                count += 1
                 h = th.cat([h, hs.pop()], dim=1)
-                h = module(h, emb, condition['prompt_emb'], None, condition['lr_prompt_emb'], reference=None, gen_mode=gen_mode)
+                h = module(h, emb, condition['prompt_emb'], None, condition['lr_prompt_emb'], reference=None, gen_mode=gen_mode) #无论如何到3之后这里都是[1,1280,14,14]的输出
+                torch.save(h, f"{save_path}output_{count}.pt")
             
         h = h.type(x.dtype)
         if self.predict_codebook_ids:
