@@ -318,6 +318,7 @@ def main():
 					t = t.to(device).long()
 					x_T = model.q_sample_respace(x_start=init_latent, t=t, sqrt_alphas_cumprod=sqrt_alphas_cumprod, sqrt_one_minus_alphas_cumprod=sqrt_one_minus_alphas_cumprod, noise=noise)
 
+
 					# reference image generation
 					condition_dic = {'prompt_emb': semantic_user, 'lr_prompt_emb': cog_embed}
 					condition_dic_ne = {'prompt_emb': None, 'lr_prompt_emb': semantic_neg}
@@ -328,6 +329,7 @@ def main():
 					init_latent_zero = model.get_first_stage_encoding(model.encode_first_stage(torch.zeros(im_lq_bs.shape, device=im_lq_bs.device)).mode())
 					condition_dic = {'prompt_emb': semantic_user, 'lr_prompt_emb': cog_embed, 'lr': init_latent, 'reference': ref_samples}
 					condition_dic_ne = {'prompt_emb': None, 'lr_prompt_emb': semantic_neg, 'lr': init_latent, 'reference': init_latent_zero}
+					breakpoint()
 
 					samples, _ = model.sample(cond=condition_dic, cond_ne=condition_dic_ne, cfg=opt.cfg, batch_size=im_lq_bs.size(0), timesteps=opt.ddpm_steps, time_replace=opt.ddpm_steps, x_T=x_T, return_intermediates=True)
 

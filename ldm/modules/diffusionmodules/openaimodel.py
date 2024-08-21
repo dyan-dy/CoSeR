@@ -1280,7 +1280,7 @@ class UNetModelAiA(nn.Module):
                                     use_checkpoint=use_checkpoint, use_lr=True, merge_x2=merge_x2, dubch=True
                                 )
                             )
-                # breakpoint()
+                
                 if level and i == self.num_res_blocks[level]:
                     out_ch = ch
                     layers.append(
@@ -1367,6 +1367,8 @@ class UNetModelAiA(nn.Module):
                 h = th.cat([h, hs.pop()], dim=1)
                 h = module(h, emb, condition['prompt_emb'], lr_condition_dec.pop(), condition['lr_prompt_emb'], reference=ref_condition_dec.pop())
         else:
+            # print(x.shape)
+            
             h = x.type(self.dtype)
             save_path = "./output_gen/"
             count = 0
@@ -1381,15 +1383,11 @@ class UNetModelAiA(nn.Module):
             count = 0
             h = self.middle_block(h, emb, condition['prompt_emb'], None, condition['lr_prompt_emb'], reference=None, gen_mode=gen_mode)
             torch.save(h, f"{save_path}middle_{count}.pt")
-            # hs.append(h)
-            torch.save(hs, f'{save_path}h_list.pt')
+            # # hs.append(h)
+            # torch.save(hs, f'{save_path}h_list.pt')
 
             count = 0
-            breakpoint()
             for module in self.output_blocks:
-                print(module)
-                print(h.shape, hs[-1].shape)
-                count += 1
                 h = th.cat([h, hs.pop()], dim=1)
                 h = module(h, emb, condition['prompt_emb'], None, condition['lr_prompt_emb'], reference=None, gen_mode=gen_mode) #无论如何到3之后这里都是[1,1280,14,14]的输出
                 torch.save(h, f"{save_path}output_{count}.pt")
@@ -1661,6 +1659,7 @@ class ControlNet(nn.Module):
 
         h = self.middle_block(h, emb, context, lr_prompt=lr_prompt)
         outs.append(self.middle_block_out(h, emb, context, lr_prompt=lr_prompt))
+        
 
         return outs
 
