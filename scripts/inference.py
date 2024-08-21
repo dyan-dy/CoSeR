@@ -325,13 +325,17 @@ def main():
 
 					ref_samples, _ = model.sample(cond=condition_dic, cond_ne=condition_dic_ne, cfg=opt.cfg_ref, batch_size=im_lq_bs.size(0), timesteps=opt.ddpm_steps, time_replace=opt.ddpm_steps, x_T=x_T, return_intermediates=True, gen_mode=True)
 
+					# solve cuda oom problem
+					torch.save(model.state_dict(), './output_gen/before_sr_model.pth')
+
 					# do super-resolution
 					init_latent_zero = model.get_first_stage_encoding(model.encode_first_stage(torch.zeros(im_lq_bs.shape, device=im_lq_bs.device)).mode())
 					condition_dic = {'prompt_emb': semantic_user, 'lr_prompt_emb': cog_embed, 'lr': init_latent, 'reference': ref_samples}
 					condition_dic_ne = {'prompt_emb': None, 'lr_prompt_emb': semantic_neg, 'lr': init_latent, 'reference': init_latent_zero}
-					breakpoint()
+					# breakpoint()
 
-					samples, _ = model.sample(cond=condition_dic, cond_ne=condition_dic_ne, cfg=opt.cfg, batch_size=im_lq_bs.size(0), timesteps=opt.ddpm_steps, time_replace=opt.ddpm_steps, x_T=x_T, return_intermediates=True)
+					samples, _ = model.sample(cond=condition_dic, cond_ne=condition_dic_ne, cfg=opt.cfg, batch_size=im_lq_bs.size(0), timesteps=opt.ddpm_steps, time_replace=opt.ddpm_steps, x_T=x_T, return_intermediates=True) #是在这里超内存了
+					breakpoint()
 
 					# cfw and color correction from stablesr
 					if not opt.wocfw:
