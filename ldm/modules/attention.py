@@ -578,7 +578,6 @@ class SpatialTransformerV2d4(nn.Module):
         if self.use_linear:
             x = self.proj_in(x)
 
-        breakpoint()
         if context is not None:
             # context = torch.cat([context, lr_prompt], 1)
             context = context # ablation on cog_embed
@@ -720,7 +719,8 @@ class SpatialTransformerV8_refV5(nn.Module):
                 ref_c = self.proj_in_cref_lna(ref_c)
 
             if context is not None:
-                context = torch.cat((context, lr_prompt), 1)
+                # context = torch.cat((context, lr_prompt), 1)
+                context = context # ablations
             else:
                 context = lr_prompt
 
@@ -730,7 +730,8 @@ class SpatialTransformerV8_refV5(nn.Module):
             x_c = None
             ref_c = None
             if context is not None:
-                context = torch.cat((context, lr_prompt), 1)
+                # context = torch.cat((context, lr_prompt), 1)
+                context = context # ablations
             else:
                 context = lr_prompt
 
