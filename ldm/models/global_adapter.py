@@ -27,6 +27,7 @@ class CogAdapter(nn.Module):
         image_atts = torch.ones(x.size()[:-1], dtype=torch.long).to(
             x.device
         )
+        
 
         query_output = self.Qformer(
             query_embeds=self.query_tokens,
@@ -35,6 +36,7 @@ class CogAdapter(nn.Module):
             use_cache=True,
             return_dict=True,
         )
+
         output = query_output.last_hidden_state
 
         if text is not None:
