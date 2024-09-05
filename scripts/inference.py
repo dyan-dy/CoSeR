@@ -326,7 +326,7 @@ def main():
 					condition_dic_ne = {'prompt_emb': None, 'lr_prompt_emb': semantic_neg}
 
 					ref_samples, _ = model.sample(cond=condition_dic, cond_ne=condition_dic_ne, cfg=opt.cfg_ref, batch_size=im_lq_bs.size(0), timesteps=opt.ddpm_steps, time_replace=opt.ddpm_steps, x_T=x_T, return_intermediates=True, gen_mode=True)
-					breakpoint()
+					# breakpoint()
 
 					# solve cuda oom problem
 					# torch.save(model.state_dict(), './output_gen/before_sr_model.pth')
@@ -340,7 +340,7 @@ def main():
 					# breakpoint()
 					# torch.cuda.empty_cache()
 					samples, _ = model.sample(cond=condition_dic, cond_ne=condition_dic_ne, cfg=opt.cfg, batch_size=im_lq_bs.size(0), timesteps=opt.ddpm_steps, time_replace=opt.ddpm_steps, x_T=x_T, return_intermediates=True) #是在这里超内存了
-					breakpoint()
+					# breakpoint()
 
 					# cfw and color correction from stablesr
 					if not opt.wocfw:

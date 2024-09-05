@@ -42,6 +42,8 @@ from sklearn.decomposition import PCA
 from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
 
+import imageio
+
 __conditioning_keys__ = {'concat': 'c_concat',
                          'crossattn': 'c_crossattn',
                          'adm': 'y'}
